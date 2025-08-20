@@ -1,0 +1,1 @@
+export type TipoMovimiento = 'INSCRIPCION' | 'REINSCRIPCION';

@@ -1,1 +1,183 @@
-/* You can add global styles to this file, and also import other style files */
+/* Importa Tailwind v4 */
+@import "tailwindcss";
+
+/* Tokens de diseño (colores, sombras, radios) */
+@theme {
+  /* Colores de tu paleta */
+  --color-ra-negro: #000000;
+  --color-ra-verde: #0E943F;      /* AUTORIZADO */
+  --color-ra-verde-2: #158D35;
+  --color-ra-slate: #374957;
+  --color-ra-rojo-oscuro: #A02129;     /* Sidebar */
+  --color-ra-rojo-fuerte: #BC040B;
+  --color-ra-rojo: #E00000;
+  --color-ra-grayLight: #D9D9D9;
+  --color-ra-bg: #F5F7F9;
+  --color-ra-white: #FFFFFF;
+  --color-ra-azul-fuerte: #0B2C4A;
+
+  /* Bordes/Shadow personalizados (clases: rounded-xl2, shadow-card) */
+  --radius-xl2: 1.25rem;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+@layer components {
+  .input-filled {
+    @apply w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3
+           text-[14px] text-gray-900 placeholder-gray-500 shadow-inner
+           focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent;
+  }
+
+  .select-wrap { @apply relative; }
+  .select-wrap select {
+    @apply w-full rounded-xl border border-gray-300 bg-gray-100 px-4 py-3 pr-10
+           text-[14px] text-gray-900 shadow-inner appearance-none
+           focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent;
+  }
+  .select-wrap .chevron {
+    @apply pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500;
+  }
+
+  .summary-box { @apply rounded-lg bg-gray-50 border border-gray-200 p-3 text-sm; }
+
+  .btn-primary-red { @apply px-6 py-2.5 rounded-md bg-red-600 text-white hover:bg-red-700; }
+
+  .card { @apply mx-4 md:mx-8 mt-4 rounded-[16px] bg-white ring-1 ring-black/10 shadow; }
+  .card-header { @apply px-6 py-4 border-b border-gray-200; }
+
+  /* ========= Resumen de compra (modal) ========= */
+  .rcm-card {
+    @apply rounded-2xl bg-white shadow-2xl ring-1 ring-black/10 overflow-hidden;
+  }
+  .rcm-header {
+    @apply flex items-center justify-between px-6 py-4 bg-gray-100 border-b border-gray-200;
+  }
+  .rcm-title {
+    @apply text-[22px] font-bold text-gray-800;
+  }
+  .rcm-close {
+    @apply w-8 h-8 grid place-items-center rounded-full bg-red-600 text-white hover:bg-red-700;
+  }
+
+  .rcm-block {
+    @apply px-6 py-3 border-b border-gray-200;
+  }
+  .rcm-block--small { @apply py-4; }
+
+  .rcm-row {
+    @apply flex items-center justify-between py-2;
+  }
+  .rcm-label { @apply font-semibold text-gray-800; }
+  .rcm-value { @apply text-gray-800; }
+
+  .rcm-item {
+    @apply flex items-center justify-between py-3 border-t border-gray-200;
+  }
+  .rcm-amount { @apply font-semibold text-gray-900; }
+
+  .rcm-total {
+    @apply flex items-center justify-between py-3 mt-2 border-t-2 border-gray-300 text-[16px] font-bold;
+  }
+
+  .rcm-paylabel { @apply block text-sm font-semibold mb-2 text-gray-800; }
+
+  .rcm-select { @apply relative; }
+  .rcm-select select {
+    @apply w-full appearance-none rounded-md bg-red-600 text-white px-4 py-2.5
+           focus:outline-none focus:ring-2 focus:ring-red-700;
+  }
+  .rcm-select .rcm-caret {
+    @apply pointer-events-none absolute inset-y-0 right-3 flex items-center text-white;
+  }
+
+  .rcm-footer { @apply px-6 py-5; }
+  .rcm-cta {
+    @apply mx-auto block w-[220px] px-6 py-2.5 rounded-full bg-red-600 text-white
+           font-medium hover:bg-red-700 disabled:opacity-60;
+  }
+}
+
+/* pages/punto-venta/punto-venta.css */
+
+/* Botones reutilizables (colores de tu tema) */
+.btn-red{
+  @apply px-4 py-2 rounded-xl bg-[color:var(--color-ra-rojo)] text-white hover:bg-[color:var(--color-ra-rojo-fuerte)];
+}
+.btn-green{
+  @apply px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700;
+}
+.icon-btn{
+  @apply w-8 h-8 grid place-items-center rounded-md border border-gray-300 bg-white hover:bg-gray-100;
+}
+
+/* Tarjeta de categoría */
+.cat-btn{
+  @apply h-24 rounded-xl2 bg-[#0B2C4A] text-white shadow-card ring-1 ring-black/10
+         flex items-center justify-center text-center px-3 hover:bg-[#0a2742];
+}
+
+/* Paginador (usa mismo set del paginador que ya tenías) */
+.pager-btn{
+  height: 2.25rem; padding: 0 0.75rem;
+  border-radius: 0.75rem; border: 1px solid transparent;
+  font-size: .875rem; transition: .15s; user-select: none;
+}
+.pager-btn--ghost{
+  background:#fff; border-color:#d1d5db; color: color-mix(in oklab, var(--color-ra-slate) 90%, black 0%);
+}
+.pager-btn--ghost:hover{ background:#f3f4f6; }
+
+.pager{
+  padding: 0.75rem 1rem;
+  border-top: 1px solid color-mix(in oklab, var(--color-ra-grayLight) 60%, transparent);
+  background: var(--color-ra-white);
+}
+.pager-row{
+  display:flex; flex-direction:column; gap:0.75rem;
+}
+@media (min-width:768px){
+  .pager-row{ flex-direction:row; align-items:center; justify-content:space-between; }
+}
+
+.pager-select{ display:flex; align-items:center; gap:0.5rem; }
+.pager-select-el{
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;         /* gray-300 */
+  background: #f3f4f6;                /* gray-100 */
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+.pager-select-el:focus{
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-ra-rojo) 40%, transparent);
+  border-color: var(--color-ra-rojo);
+}
+
+.pager-nav{ display:flex; align-items:center; gap:0.375rem; }
+.pager-btn{
+  height: 2.25rem; padding: 0 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+  font-size: 0.875rem;
+  transition: background-color .15s, border-color .15s, color .15s, opacity .15s;
+  user-select: none;
+}
+.pager-btn--ghost{
+  background:#fff; border-color:#d1d5db; color: color-mix(in oklab, var(--color-ra-slate) 90%, black 0%);
+}
+.pager-btn--ghost:hover{ background:#f3f4f6; }
+.pager-btn--primary{
+  background: var(--color-ra-rojo);
+  border-color: var(--color-ra-rojo);
+  color:#fff;
+}
+.pager-btn--primary:hover{ background: var(--color-ra-rojo-fuerte); border-color: var(--color-ra-rojo-fuerte); }
+.pager-btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+.pager-info{ font-size: .875rem; color: color-mix(in oklab, var(--color-ra-slate) 90%, black 0%); }
+
+/* Base global (déjalo si ya lo usabas; no toca nada del modal) */
+:root {
+  color: var(--color-brand-black);
+  background: var(--color-brand-bg);
+}

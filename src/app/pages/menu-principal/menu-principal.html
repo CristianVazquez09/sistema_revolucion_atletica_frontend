@@ -1,0 +1,71 @@
+<div class="h-screen w-full flex bg-neutral-100">
+  <!-- Sidebar -->
+  <aside class="w-80 bg-ra-rojo-fuerte text-white flex flex-col">
+    <!-- Logo -->
+    <div class="h-60 flex items-center justify-center border-b border-red-600">
+    <img src="imagenes/logo-revolucion-atletica.png" alt="Logo Revolución Atlética" class="h-80 object-contain" />
+    </div>
+
+    <!-- Menu -->
+    <nav class="flex-1  ">
+      <a routerLink="/pages/asistencia" routerLinkActive="bg-ra-rojo-oscuro"
+         class="group flex items-center gap-6 rounded px-6 py-4 hover:bg-ra-rojo-oscuro transition border-y border-white text-xl">
+         <img src="iconos/asistencia.svg" alt="Icono calendario" class="w-8 h-8 text-white" />
+        <span>Registro de Asistencia</span>
+      </a>
+
+      <a routerLink="/pages/inscripcion" routerLinkActive="bg-ra-rojo-oscuro"
+         class="group flex items-center gap-6 rounded px-6 py-4 hover:bg-ra-rojo-oscuro transition border-y border-white text-xl">
+         <img src="iconos/inscripcion.svg" alt="Icono calendario" class="w-8 h-8 text-white" />
+        <span>Inscripciones</span>
+      </a>
+
+       <a routerLink="/pages/socio" routerLinkActive="bg-ra-rojo-oscuro"
+         class="group flex items-center gap-6 rounded px-6 py-4 hover:bg-ra-rojo-oscuro transition border-y border-white text-xl">
+         <img src="iconos/socios.svg" alt="Icono calendario" class="w-8 h-8 text-white" />
+        <span>Socios</span>
+      </a>
+      
+      <a routerLink="/pages/paquete" routerLinkActive="bg-ra-rojo-oscuro"
+         class="group flex items-center gap-6 rounded px-6 py-4 hover:bg-ra-rojo-oscuro transition border-b border-white text-xl">
+         <img src="iconos/paquete.svg" alt="Icono calendario" class="w-8 h-8 text-white" />
+        <span>Paquetes</span>
+      </a>
+
+      <a routerLink="/pages/inventario" routerLinkActive="bg-ra-rojo-oscuro"
+         class="group flex items-center gap-6 rounded px-6 py-4 hover:bg-ra-rojo-oscuro transition border-b border-white text-xl">
+         <img src="iconos/inventario.svg" alt="Icono calendario" class="w-8 h-8 text-white" />
+        <span>Inventario</span>
+      </a>
+      <a routerLink="/pages/punto-venta" routerLinkActive="bg-ra-rojo-oscuro"
+         class="group flex items-center gap-6 rounded px-6 py-4 hover:bg-ra-rojo-oscuro transition border-b border-white text-xl">
+         <img src="iconos/inventario.svg" alt="Icono calendario" class="w-8 h-8 text-white" />
+        <span>PUnto de Venta</span>
+      </a>
+
+    </nav>
+
+    <div class="px-4 py-3 text-xs text-white/80 border-t border-red-600">
+      © Revolución Atlética
+    </div>
+  </aside>
+
+  <main class="flex-1 flex flex-col overflow-hidden">
+    <!-- Top bar -->
+    <header class="h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-6">
+      <div class="text-xl">
+        <span class="font-semibold">FECHA:   </span>
+        <span>Jueves 18 de Julio del 2025</span>
+      </div>
+      <div class="flex items-center gap-2 text-neutral-600 text-xl">
+        <img src="iconos/usuario.svg" alt="Icono calendario" class="w-6 h-6 text-white" />
+        <span>Roberto</span>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <section class="py-6 px-2 overflow-auto">
+      <router-outlet />
+    </section>
+  </main>
+</div>

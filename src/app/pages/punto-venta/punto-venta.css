@@ -1,0 +1,52 @@
+/* 3 columnas, ocupa casi todo el contenedor */
+.cat-grid{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem; /* separaciones agradables */
+}
+
+/* estado vacío centrado y proporcional */
+.cat-grid__empty{
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem 0;
+  color: color-mix(in oklab, var(--color-ra-slate) 90%, black 0%);
+}
+
+/* Tarjeta cuadrada grande */
+.cat-card{
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  border-radius: 1rem;
+  background: #0B2C4A;              /* azul marino que ya usas */
+  color:#fff;
+  box-shadow: var(--shadow-card);
+  outline: 2px solid transparent;
+  transition: transform .12s, outline-color .12s, box-shadow .12s, filter .12s;
+
+  /* Cuadrado y grande */
+  aspect-ratio: 1 / 1;
+  min-height: 160px;                 /* sube/baja si lo quieres aún más grande */
+  padding: 1rem;
+}
+
+/* Texto proporcional y centrado */
+.cat-card__label{
+  font-weight: 600;
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  line-height: 1.2;
+}
+
+/* Hover: levanta un poquito y resalta borde */
+.cat-card:hover,
+.cat-card--hover{
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  outline-color: color-mix(in oklab, var(--color-ra-rojo) 35%, transparent);
+}
+
+/* Activa: borde más notorio y halo sutil */
+.cat-card--active{
+  outline-color: color-mix(in oklab, var(--color-ra-rojo) 55%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-ra-rojo) 18%, transparent) inset;
+}
+
