@@ -4,6 +4,7 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
 import { ProductoModal } from './producto-modal/producto-modal';
 import { ProductoService } from '../../services/producto-service';
 import { ProductoData } from '../../model/producto-data';
+import { NotificacionService } from '../../services/notificacion-service';
 
 @Component({
   selector: 'app-producto',
@@ -16,6 +17,7 @@ export class Producto implements OnInit {
 
   private productoSrv = inject(ProductoService);
   private router = inject(Router);
+  private notificacion = inject(NotificacionService);
 
   productos: ProductoData[] = [];
   loading = true;
@@ -55,7 +57,7 @@ export class Producto implements OnInit {
     if (!confirm(`¿Eliminar producto "${p.nombre}"?`)) return;
     this.productoSrv.eliminar(p.idProducto).subscribe({
       next: () => this.cargar(),
-      error: () => alert('No se pudo eliminar el producto.')
+      error: () => this.notificacion.error('No se pudo eliminar el producto.')
     });
   }
 }

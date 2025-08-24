@@ -1,12 +1,10 @@
-import { TipoPago } from "../util/enums/TipoPago  ";
-import { DetalleVentaData } from "./detalle-venta-data";
+import { TipoPago } from '../util/enums/TipoPago  ';
+import { DetalleVentaData } from './detalle-venta-data';
 
 export interface VentaData {
-    idVenta: number;
-    fecha: Date;
-    total: number;
-    tipoPago: TipoPago;
-    detalles: DetalleVentaData;
-
-
+  idVenta?: number; // opcional al crear
+  fecha?: string; // la setea el backend y te la devuelve
+  total: number;
+  tipoPago: TipoPago;
+  detalles: DetalleVentaData[];
 }

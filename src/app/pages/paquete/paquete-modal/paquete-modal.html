@@ -45,7 +45,7 @@
           class="w-full appearance-none rounded-xl border border-gray-200 bg-gray-100 text-gray-900 px-4 py-3 pr-10 shadow-inner focus:outline-none focus:ring-2 focus:ring-ra-green focus:border-transparent">
           <option [ngValue]="null" disabled>Selecciona una opción</option>
           @for (t of tiempos; track t) {
-            <option [ngValue]="t">{{ t }}</option>
+            <option [ngValue]="t">{{ t  |  tiempoPlan }}</option>
           }
         </select>
         <!-- chevron -->

@@ -1,0 +1,114 @@
+<!-- Buscador (grande) -->
+<div class="mx-4 lg:mx-10 my-4">
+  <form [formGroup]="formulario" (ngSubmit)="buscar()" class="flex gap-3 items-center">
+    <div class="relative max-w-sm flex-1">
+      <input type="text" formControlName="idSocio"
+             class="input-filled pl-12 pr-10 text-[16px] py-3.5"
+             placeholder="Buscar por ID de socio…" />
+      <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-6 w-6 text-gray-500"
+           viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
+        <path d="M21 21l-4.3-4.3" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+      @if (formulario.controls.idSocio.value) {
+        <button type="button" (click)="limpiar()"
+                class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full grid place-items-center
+                       text-gray-500 hover:text-gray-700 hover:bg-gray-200">✕</button>
+      }
+    </div>
+    <button type="submit" class="btn-primary-red text-[16px] px-6 py-3">Buscar</button>
+  </form>
+</div>
+
+<!-- Card principal (ocupa casi todo el ancho) -->
+<div class="mx-4 lg:mx-10 rounded-xl2 bg-[color:var(--color-ra-white)] ring-1 ring-black/10 shadow-card overflow-hidden">
+  <div class="px-6 lg:px-10 py-5 border-b border-gray-200 flex items-center justify-between">
+    <div class="text-base lg:text-lg text-gray-700">
+      <span class="font-semibold">FECHA:</span> {{ fechaHoyBonita }}
+    </div>
+  </div>
+
+  <div class="p-6 lg:p-10 space-y-6">
+    @if (cargando) {
+      <div class="text-center text-gray-600 py-10 text-lg">Cargando…</div>
+    } @else if (error) {
+      <div class="text-center text-red-600 py-10 text-lg">{{ error }}</div>
+    } @else if (!socio()) {
+      <div class="text-center text-gray-600 py-10 text-lg">Busca un socio por ID para ver su estado.</div>
+    } @else {
+      <!-- Cabecera socio (más grande) -->
+      <div class="grid grid-cols-[auto_1fr] gap-8 items-center">
+        <!-- Foto más grande -->
+        <div class="w-40 h-40 md:w-48 md:h-48 rounded-2xl bg-gray-200 grid place-items-center text-gray-500">
+          <svg viewBox="0 0 24 24" class="w-16 h-16 md:w-20 md:h-20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 20c2.5-3 5-4 8-4s5.5 1 8 4" stroke-linecap="round"></path>
+          </svg>
+        </div>
+
+        <!-- Info grande -->
+        <div class="space-y-3">
+          <div class="text-3xl md:text-4xl font-extrabold tracking-tight">
+            Socio: {{ idBonito(socio()!.idSocio) }} {{ socio()!.nombre }} {{ socio()!.apellido }}
+          </div>
+
+          <div class="text-xl md:text-2xl">
+            <span class="font-bold">Estado:</span> Activo
+          </div>
+
+          <div class="text-xl md:text-2xl">
+            <span class="font-bold">Próxima fecha de pago:</span>
+            @if (proximaFechaPago()) { <span>{{ proximaFechaPago() | date:'dd/MM/yyyy' }}</span> } @else { <span>—</span> }
+          </div>
+
+          <!-- Autorizado debajo de la fecha -->
+          <div class="pt-2">
+            @if (autorizado()) {
+              <span class="text-2xl md:text-3xl font-extrabold text-[color:var(--color-ra-verde)]">AUTORIZADO</span>
+            } @else {
+              <div class="flex items-center gap-4">
+                <span class="text-2xl md:text-3xl font-extrabold text-[color:var(--color-ra-rojo)]">NO AUTORIZADO</span>
+                <a class="px-5 py-2.5 rounded-md bg-[color:var(--color-ra-rojo)] text-white hover:bg-[color:var(--color-ra-rojo-fuerte)]"
+                   [routerLink]="['/pages/reinscripcion', socio()!.idSocio]">
+                  RENOVAR
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Paquetes (igual que antes) -->
+      <div class="mt-2">
+        <div class="text-2xl md:text-3xl font-bold mb-4">Paquetes:</div>
+
+        @if (tarjetas().length === 0) {
+          <div class="text-gray-700 text-lg">No hay membresías vigentes para este socio.</div>
+        } @else {
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+            @for (t of tarjetas(); track t.idMembresia) {
+              <div class="rounded-2xl px-5 py-5 text-white shadow-card"
+                   [ngClass]="{ 'bg-green-600': t.estado === 'verde', 'bg-yellow-500': t.estado === 'amarillo', 'bg-red-600': t.estado === 'rojo' }">
+                <div class="text-center text-lg font-semibold mb-1">
+                  Paquete {{ t.paquete.nombre || ('#' + t.paquete.idPaquete) }}
+                </div>
+                <div class="h-px w-full bg-white/60 my-2"></div>
+                <div class="text-center">
+                  <div class="text-base">
+                    {{ t.estado === 'verde' ? 'Activo' : (t.estado === 'amarillo' ? 'Por vencer' : 'Vencido') }}
+                  </div>
+                  <div class="text-base">
+                    {{ t.paquete.tiempo | tiempoPlan }}
+                  </div>
+                  <div class="mt-3 text-sm bg-white/15 rounded-md inline-block px-3 py-1">
+                    {{ t.fechaFin | date:'dd/MM/yyyy' }}
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -16,11 +16,13 @@ import {
 import { SocioService } from '../../services/socio-service';
 import { SocioData } from '../../model/socio-data';
 import { SocioModal } from './socio-modal/socio-modal';
+import { Router } from '@angular/router';
+import { NotificacionService } from '../../services/notificacion-service';
 
 // ─────────── Tipos de paginación del backend ───────────
 type PageInfo = {
-  size: number;        // tamaño de página
-  number: number;      // 0-based
+  size: number; // tamaño de página
+  number: number; // 0-based
   totalElements: number;
   totalPages: number;
 };
@@ -48,7 +50,7 @@ export class Socio implements OnInit, OnDestroy {
   socioActual: SocioData | null = null;
 
   // ─────────── Paginación ───────────
-  paginaActual = 0;           // 0-based
+  paginaActual = 0; // 0-based
   tamanioPagina = 10;
   totalPaginas = 0;
   totalElementos = 0;
@@ -60,7 +62,7 @@ export class Socio implements OnInit, OnDestroy {
   private busqueda$ = new Subject<string>();
   private subsBusqueda?: Subscription;
 
-  constructor(private socioService: SocioService) {}
+  constructor(private socioService: SocioService, private router:Router, private notificacion:NotificacionService) {}
 
   // ─────────── Ciclo de vida ───────────
   ngOnInit(): void {
@@ -136,18 +138,20 @@ export class Socio implements OnInit, OnDestroy {
     const texto = this.terminoBusqueda.trim();
     const fuente$ =
       texto.length >= this.minCaracteresBusqueda
-        ? this.socioService.buscarSociosPorNombre(texto, this.paginaActual, this.tamanioPagina)
+        ? this.socioService.buscarSociosPorNombre(
+            texto,
+            this.paginaActual,
+            this.tamanioPagina
+          )
         : this.socioService.buscarSocios(this.paginaActual, this.tamanioPagina);
 
-    fuente$
-      .pipe(finalize(() => (this.cargando = false)))
-      .subscribe({
-        next: (resp: PagedResponse<SocioData>) => this.aplicarRespuesta(resp),
-        error: (err) => {
-          console.error(err);
-          this.mensajeError = 'No se pudo cargar la lista de listaSocios.';
-        },
-      });
+    fuente$.pipe(finalize(() => (this.cargando = false))).subscribe({
+      next: (resp: PagedResponse<SocioData>) => this.aplicarRespuesta(resp),
+      error: (err) => {
+        console.error(err);
+        this.mensajeError = 'No se pudo cargar la lista de listaSocios.';
+      },
+    });
   }
 
   // ─────────── Eventos del buscador ───────────
@@ -203,7 +207,12 @@ export class Socio implements OnInit, OnDestroy {
     if (!confirm(`¿Eliminar al socio "${s.nombre} ${s.apellido}"?`)) return;
     this.socioService.eliminar(s.idSocio).subscribe({
       next: () => this.cargarSocios(),
-      error: () => alert('No se pudo eliminar.'),
+      error: () => this.notificacion.error('No se pudo eliminar.'),
     });
+  }
+
+  verHistorial(s: SocioData): void {
+    if (!s?.idSocio) return;
+    this.router.navigate(['/pages/socio', s.idSocio, 'historial']);
   }
 }

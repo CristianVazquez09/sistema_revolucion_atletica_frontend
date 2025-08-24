@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 
 import { CategoriaService } from '../../services/categoria-service';
 import { CategoriaData } from '../../model/categoria-data';
+import { NotificacionService } from '../../services/notificacion-service';
 
 @Component({
   selector: 'app-categoria',
@@ -18,6 +19,7 @@ export class Categoria implements OnInit {
   // Inyección
   private fb = inject(FormBuilder);
   private categoriaSrv = inject(CategoriaService);
+  private notificacion = inject(NotificacionService);
 
   // Estado
   categorias: CategoriaData[] = [];
@@ -70,7 +72,7 @@ export class Categoria implements OnInit {
       error: err => {
         console.error(err);
         this.guardando = false;
-        alert('No se pudo guardar la categoría.');
+        this.notificacion.exito('No se pudo guardar la categoría.');
       }
     });
   }
@@ -96,7 +98,7 @@ export class Categoria implements OnInit {
 
     this.categoriaSrv.eliminar(c.idCategoria).subscribe({
       next: () => this.cargar(),
-      error: () => alert('No se pudo eliminar la categoría.')
+      error: () => this.notificacion.error('No se pudo eliminar la categoría.')
     });
   }
 

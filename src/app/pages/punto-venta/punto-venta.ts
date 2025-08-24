@@ -1,4 +1,3 @@
-// pages/punto-venta/punto-venta.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,8 +5,14 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of, finalize } 
 
 import { CategoriaService } from '../../services/categoria-service';
 import { ProductoService } from '../../services/producto-service';
+import { VentaService } from '../../services/venta-service';
+
 import { CategoriaData } from '../../model/categoria-data';
 import { ProductoData } from '../../model/producto-data';
+// Modal de resumen
+import { ResumenVenta } from '../resumen-venta/resumen-venta';
+import { TipoPago } from '../../util/enums/TipoPago  ';
+import { NotificacionService } from '../../services/notificacion-service';
 
 type CarritoItem = {
   idProducto: number;
@@ -19,22 +24,27 @@ type CarritoItem = {
 @Component({
   selector: 'app-punto-venta',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ResumenVenta],
   templateUrl: './punto-venta.html',
   styleUrl: './punto-venta.css'
 })
 export class PuntoVenta implements OnInit {
-  // inyección
+  // Inyección de servicios
   private categoriaSrv = inject(CategoriaService);
-  private productoSrv = inject(ProductoService);
+  private productoSrv  = inject(ProductoService);
+  private ventaSrv     = inject(VentaService);
+  private notificacion = inject(NotificacionService);
 
   // UI principal (categorías o productos)
   modo: 'categorias' | 'productos' = 'categorias';
 
-  // categorías
+  // ───────────── Categorías ─────────────
   categorias: CategoriaData[] = [];
   paginaCategorias = 0;
   tamanoPaginaCategorias = 6; // 3x2
+  categoriaActivaId: number | null = null;
+  categoriaHoverId: number | null = null;
+
   get totalPagCats(): number {
     return Math.max(1, Math.ceil(this.categorias.length / this.tamanoPaginaCategorias));
   }
@@ -42,24 +52,29 @@ export class PuntoVenta implements OnInit {
     const ini = this.paginaCategorias * this.tamanoPaginaCategorias;
     return this.categorias.slice(ini, ini + this.tamanoPaginaCategorias);
   }
-  categoriaActivaId: number | null = null;
-  categoriaHoverId: number | null = null;
 
-  // productos
+  // ───────────── Productos ─────────────
   productos: ProductoData[] = [];
   productosFiltrados: ProductoData[] = [];
   productoSeleccionado: ProductoData | null = null;
 
-  // búsqueda (backend en ≥ 2 letras)
+  // Búsqueda (backend en ≥ 2 letras)
   terminoBusqueda = '';
   private search$ = new Subject<string>();
 
-  // carrito
+  // ───────────── Carrito ─────────────
   carrito: CarritoItem[] = [];
   indiceCarritoSeleccionado: number | null = null;
   cantidadParaAgregar = 1;
 
-  // estado
+  // ───────────── Pago / Modal ─────────────
+  mostrarModalResumen = false;
+  realizandoPago = false;
+  readonly fechaHoy = new Date();
+  readonly tipoPagoInicial: TipoPago = 'EFECTIVO';
+  usuarioId = 1; // reemplaza cuando tengas auth
+
+  // ───────────── Estado general ─────────────
   cargandoCategorias = true;
   cargandoProductos = false;
   error: string | null = null;
@@ -76,23 +91,21 @@ export class PuntoVenta implements OnInit {
           const t = (q ?? '').trim();
           if (t.length >= 2) {
             this.modo = 'productos';
-            this.categoriaActivaId = null; // búsqueda libre
+            this.categoriaActivaId = null;      // búsqueda libre
             this.cargandoProductos = true;
             this.productoSeleccionado = null;
-            // Asegúrate de tener este método en tu ProductoService:
-            // buscarPorNombre(nombre: string)
             return this.productoSrv.buscarPorNombre(t)
               .pipe(finalize(() => (this.cargandoProductos = false)));
           }
           if (t.length === 0) {
-            // Si no hay categoría activa, volvemos a categorías
             if (this.categoriaActivaId == null) {
+              // sin término y sin categoría: volver a categorías
               this.modo = 'categorias';
               this.productos = [];
               this.productosFiltrados = [];
               this.productoSeleccionado = null;
             } else {
-              // Si había una categoría activa, recargamos su lista
+              // había categoría activa: recargar su lista
               this.cargarProductosPorCategoria(this.categoriaActivaId);
             }
           }
@@ -105,7 +118,7 @@ export class PuntoVenta implements OnInit {
           this.productos = lista ?? [];
           this.productosFiltrados = [...this.productos];
         },
-        error: (err) => {
+        error: (err: unknown) => {
           console.error(err);
           this.error = 'No se pudo ejecutar la búsqueda.';
           this.cargandoProductos = false;
@@ -124,7 +137,7 @@ export class PuntoVenta implements OnInit {
         this.cargandoCategorias = false;
         this.modo = 'categorias';
       },
-      error: (err) => {
+      error: (err: unknown) => {
         console.error(err);
         this.cargandoCategorias = false;
         this.error = 'No se pudieron cargar las categorías.';
@@ -134,7 +147,7 @@ export class PuntoVenta implements OnInit {
 
   seleccionarCategoria(c: CategoriaData): void {
     if (!c?.idCategoria) return;
-    this.categoriaActivaId = Number(c.idCategoria); // marca activa
+    this.categoriaActivaId = Number(c.idCategoria);
     this.terminoBusqueda = '';
     this.productoSeleccionado = null;
     this.cargarProductosPorCategoria(this.categoriaActivaId);
@@ -144,7 +157,6 @@ export class PuntoVenta implements OnInit {
   onCategoriaHover(c?: CategoriaData): void {
     this.categoriaHoverId = c?.idCategoria ?? null;
   }
-
   anteriorPaginaCategorias(): void {
     if (this.paginaCategorias > 0) this.paginaCategorias--;
   }
@@ -168,15 +180,13 @@ export class PuntoVenta implements OnInit {
     this.productos = [];
     this.productosFiltrados = [];
 
-    // Asegúrate de tener este método en tu ProductoService:
-    // buscarPoCategoria(idCategoria: number)
     this.productoSrv.buscarPorCategoria(idCategoria).subscribe({
       next: (lista) => {
         this.productos = lista ?? [];
         this.productosFiltrados = [...this.productos];
         this.cargandoProductos = false;
       },
-      error: (err) => {
+      error: (err: unknown) => {
         console.error(err);
         this.cargandoProductos = false;
         this.error = 'No se pudieron cargar los productos.';
@@ -190,7 +200,7 @@ export class PuntoVenta implements OnInit {
   }
 
   seleccionarProducto(p: ProductoData): void {
-    if (this.toNumber(p.cantidad) <= 0) return; // protección extra
+    if (this.toNumber(p.cantidad) <= 0) return; // protección: sin stock
     this.productoSeleccionado = p;
   }
 
@@ -215,7 +225,7 @@ export class PuntoVenta implements OnInit {
 
     const disponible = this.stockDisponible(p);
     if (this.cantidadParaAgregar > disponible) {
-      alert(`Solo hay ${disponible} en stock para "${String(p.nombre ?? '')}".`);
+      this.notificacion.aviso(`Solo hay ${disponible} en stock para "${String(p.nombre ?? '')}".`);
       return;
     }
 
@@ -246,16 +256,13 @@ export class PuntoVenta implements OnInit {
     if (this.indiceCarritoSeleccionado == null) return;
     const item = this.carrito[this.indiceCarritoSeleccionado];
 
-    // Busca el producto para respetar stock
+    // respetar stock
     const prod = this.productos.find(p => Number(p.idProducto as any ?? 0) === item.idProducto);
     const stockTotal = prod ? this.stockOriginal(prod) : Infinity;
     const enCarrito = this.stockYaEnCarrito(item.idProducto);
 
-    if (enCarrito < stockTotal) {
-      item.cantidad++;
-    } else {
-      alert('No hay más stock disponible.');
-    }
+    if (enCarrito < stockTotal) item.cantidad++;
+    else this.notificacion.aviso('No hay más stock disponible.');
   }
 
   restar(): void {
@@ -279,14 +286,56 @@ export class PuntoVenta implements OnInit {
     this.indiceCarritoSeleccionado = null;
     this.productoSeleccionado = null;
     this.cantidadParaAgregar = 1;
-    // si estabas en búsqueda sin categoría activa, vuelve a categorías
-    if (!this.categoriaActivaId && this.terminoBusqueda.length < 2) {
-      this.modo = 'categorias';
-    }
+    if (!this.categoriaActivaId && this.terminoBusqueda.length < 2) this.modo = 'categorias';
   }
 
-  // helper Number -> number
-  toNumber(v: any): number {
-    return typeof v === 'number' ? v : Number(v ?? 0);
+  // ───────────── Modal Resumen / Pago ─────────────
+  abrirModalResumen(): void {
+    if (this.carrito.length === 0) { this.notificacion.aviso('Tu carrito está vacío.'); return; }
+    this.mostrarModalResumen = true;
+  }
+  cerrarModalResumen(): void {
+    this.mostrarModalResumen = false;
+  }
+
+  confirmarVentaDesdeModal(tipoPago: TipoPago): void {
+    if (this.realizandoPago) return;
+
+    const detalles = this.carrito.map(it => ({
+      producto: { idProducto: it.idProducto },
+      cantidad: it.cantidad,
+      subTotal: this.round2(it.cantidad * it.precioUnit)
+    }));
+
+    const body = {
+      total: this.round2(this.total),
+      tipoPago,
+      detalles,
+      usuario: { idUsuario: this.usuarioId }
+    };
+
+    this.realizandoPago = true;
+    this.ventaSrv.guardar(body as any).subscribe({
+      next: () => {
+        this.realizandoPago = false;
+        this.cerrarModalResumen();
+        this.cancelar();
+        this.volverACategorias();
+        this.notificacion.exito('¡Venta registrada correctamente!');
+      },
+      error: (err: unknown) => {
+        console.error(err);
+        this.realizandoPago = false;
+        this.notificacion.error('No se pudo registrar la venta.');
+      }
+    });
+  }
+
+  // Helpers numéricos
+  toNumber(v: unknown): number {
+    return typeof v === 'number' ? v : Number((v as any) ?? 0);
+  }
+  private round2(n: number): number {
+    return Math.round(n * 100) / 100;
   }
 }

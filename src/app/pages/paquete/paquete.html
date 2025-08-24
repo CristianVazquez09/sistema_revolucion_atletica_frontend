@@ -39,7 +39,7 @@
           @for (p of listaPaquetes; track p.idPaquete) {
             <tr class="border-t border-ra-grayLight/60 hover:bg-ra-bg">
               <td class="py-4 px-6 text-left truncate">{{ p.nombre }}</td>
-              <td class="py-4 px-6 text-center">{{ p.tiempo }}</td>
+              <td class="py-4 px-6 text-center">{{ p.tiempo | tiempoPlan}}</td>
               <td class="py-4 px-6 text-center text-sm">{{ p.precio | currency:'MXN':'symbol-narrow':'1.2-2' }}</td>
               <td class="py-4 px-6 text-center text-sm">{{ p.costoInscripcion | currency:'MXN':'symbol-narrow':'1.2-2' }}</td>
               <td class="py-2 px-6">

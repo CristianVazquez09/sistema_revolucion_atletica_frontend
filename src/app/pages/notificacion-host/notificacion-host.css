@@ -1,0 +1,47 @@
+/* Pila: esquina superior derecha */
+.noti-pila{
+  position: fixed; top: 16px; right: 16px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+/* Tarjeta base */
+.noti{
+  width: min(92vw, 380px);
+  background: var(--color-ra-white);
+  color: var(--color-ra-slate);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid color-mix(in oklab, var(--color-ra-grayLight) 60%, transparent);
+  overflow: hidden;
+  transform: translateY(-6px);
+  opacity: 0;
+  animation: noti-in .18s ease-out forwards;
+}
+@keyframes noti-in { to { transform: translateY(0); opacity: 1; } }
+
+.noti-cuerpo{ display:flex; align-items:center; gap:10px; padding: 10px 12px; }
+
+/* Barra de color (lado izquierdo) */
+.noti-barra{ width: 6px; align-self: stretch; background: #e5e7eb; }
+
+/* Ícono */
+.noti-icono{ color: #6b7280; display:grid; place-items:center; }
+
+/* Textos */
+.noti-textos{ flex:1; min-width: 0; }
+.noti-titulo{ font-weight: 700; font-size: 0.92rem; line-height: 1.1; }
+.noti-mensaje{ font-size: 0.9rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Botón cerrar */
+.noti-cerrar{
+  width:28px; height:28px; border-radius: 8px;
+  display:grid; place-items:center;
+  color:#6b7280; background: transparent; border: none; cursor:pointer;
+}
+.noti-cerrar:hover{ background:#f3f4f6; }
+
+/* Colores por tipo (tu paleta) */
+.noti--exito .noti-barra{ background: var(--color-ra-verde); }
+.noti--error .noti-barra{ background: var(--color-ra-rojo); }
+.noti--aviso .noti-barra{ background: #f59e0b; }
+.noti--info  .noti-barra{ background: var(--color-ra-azul-fuerte); }

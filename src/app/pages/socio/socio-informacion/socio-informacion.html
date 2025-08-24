@@ -1,0 +1,112 @@
+<!-- Encabezado compacto -->
+<div class="mx-2 md:mx-6 lg:mx-8 mt-3 mb-3">
+  <div class="flex items-center justify-between bg-[color:var(--color-ra-white)] ring-1 ring-black/10 shadow-card rounded-xl2 px-4 py-3">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-xl bg-gray-200 grid place-items-center text-gray-500">
+        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c2.5-3 5-4 8-4s5.5 1 8 4" stroke-linecap="round"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="font-semibold text-[color:var(--color-ra-slate)] leading-tight">
+          {{ socioNombre || ('Socio ' + idSocio) }}
+        </div>
+        <div class="text-sm text-[color:var(--color-ra-slate)]/70">
+          {{ socioTelefono || '—' }}
+        </div>
+      </div>
+    </div>
+
+    <a routerLink="/pages/socio"
+       class="w-10 h-10 rounded-xl bg-[color:var(--color-ra-azul-fuerte)] text-white grid place-items-center hover:brightness-110"
+       title="Volver">
+      <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </a>
+  </div>
+</div>
+
+<!-- Tabla (contenido más pequeño y centrado) -->
+<div class="mx-2 md:mx-6 lg:mx-8 bg-[color:var(--color-ra-white)] rounded-xl2 shadow-card ring-1 ring-black/10 overflow-hidden text-[13px]">
+  <table class="w-full table-fixed">
+    <!-- Cols: más espacio a las fechas; menos a movimiento/importe/desc/total -->
+    <colgroup>
+      <col class="w-[8%]">   <!-- ID -->
+      <col class="w-[14%]">  <!-- Movimiento (reducido) -->
+      <col class="w-[16%]">  <!-- Fecha (más ancho) -->
+      <col class="w-[16%]">  <!-- Fecha pago (más ancho) -->
+      <col class="w-[9%]">   <!-- Importe (reducido) -->
+      <col class="w-[9%]">   <!-- Descuento (reducido) -->
+      <col class="w-[12%]">  <!-- Tipo de pago -->
+      <col class="w-[10%]">  <!-- Total (reducido) -->
+    </colgroup>
+
+    <thead>
+      <tr class="bg-[color:var(--color-ra-grayLight)]/40">
+        <th class="py-2 px-3 text-center font-semibold uppercase text-[color:var(--color-ra-slate)]">ID</th>
+        <th class="py-2 px-3 text-center font-semibold uppercase text-[color:var(--color-ra-slate)]">Movimiento</th>
+        <th class="py-2 px-3 text-center font-semibold uppercase text-[color:var(--color-ra-slate)]">Fecha</th>
+        <th class="py-2 px-3 text-center font-semibold uppercase text-[color:var(--color-ra-slate)]">Fecha pago</th>
+        <th class="py-2 px-3 text-center font-semibold uppercase text-[color:var(--color-ra-slate)]">Importe</th>
+        <th class="py-2 px-3 text-center font-semibold uppercase text-[color:var(--color-ra-slate)]">Descuento</th>
+        <th class="py-2 px-3 text-center font-semibold uppercase text-[color:var(--color-ra-slate)]">Tipo de pago</th>
+        <th class="py-2 px-3 text-center font-semibold uppercase text-[color:var(--color-ra-slate)]">Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @if (cargando) {
+        <tr><td colspan="8" class="py-6 px-6 text-center text-[color:var(--color-ra-slate)]">Cargando…</td></tr>
+      } @else if (error) {
+        <tr><td colspan="8" class="py-6 px-6 text-center text-red-600">{{ error }}</td></tr>
+      } @else if (movimientos.length === 0) {
+        <tr><td colspan="8" class="py-6 px-6 text-center text-[color:var(--color-ra-slate)]">Sin movimientos.</td></tr>
+      } @else {
+        @for (m of movimientos; track m.idMembresia) {
+          <tr class="border-t border-[color:var(--color-ra-grayLight)]/60">
+            <td class="py-2 px-3 text-center">{{ m.idMembresia }}</td>
+            <td class="py-2 px-3 text-center truncate">{{ m.movimiento }}</td>
+            <td class="py-2 px-3 text-center">{{ m.fechaInicio | date:'dd/MM/yyyy' }}</td>
+            <td class="py-2 px-3 text-center">{{ m.fechaFin    | date:'dd/MM/yyyy' }}</td>
+            <td class="py-2 px-3 text-center">{{ m.paquete.precio | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+            <td class="py-2 px-3 text-center">{{ m.descuento        | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+            <td class="py-2 px-3 text-center">{{ m.tipoPago }}</td>
+            <td class="py-2 px-3 text-center font-semibold">{{ m.total | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+
+  <!-- Paginador con "Mostrar X por página" (también más compacto) -->
+  <div class="pager text-[13px]">
+    <div class="pager-row">
+      <!-- Selector tamaño -->
+      <div class="pager-select">
+        <span class="text-[13px] text-[color:var(--color-ra-slate)]">Mostrar</span>
+        <select class="pager-select-el" [ngModel]="tamanio" (ngModelChange)="cambiarTamanioPagina($event)">
+          @for (t of tamaniosDisponibles; track t) { <option [ngValue]="t">{{ t }}</option> }
+        </select>
+        <span class="text-[13px] text-[color:var(--color-ra-slate)]">por página</span>
+      </div>
+
+      <!-- Controles -->
+      <nav class="pager-nav" aria-label="Paginación">
+        <button class="pager-btn pager-btn--ghost"   (click)="irPrimera()"  [disabled]="pagina === 0"                    title="Primera">«</button>
+        <button class="pager-btn pager-btn--ghost"   (click)="irAnterior()" [disabled]="pagina === 0"                    title="Anterior">‹</button>
+        <button class="pager-btn pager-btn--primary" (click)="irSiguiente()" [disabled]="pagina + 1 >= totalPaginas"     title="Siguiente">Siguiente ›</button>
+        <button class="pager-btn pager-btn--ghost"   (click)="irUltima()"   [disabled]="pagina + 1 >= totalPaginas"      title="Última">»</button>
+      </nav>
+
+      <!-- Info -->
+      <div class="pager-info">
+        Mostrando <strong>{{ rangoDesde }}</strong>–<strong>{{ rangoHasta }}</strong>
+        de <strong>{{ totalElementos }}</strong>
+        @if (tamanio > 0 ) { <span>(Página {{ pagina + 1 }} de {{ totalPaginas }})</span> }
+      </div>
+    </div>
+  </div>
+</div>
+

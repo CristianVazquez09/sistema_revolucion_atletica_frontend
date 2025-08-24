@@ -4,11 +4,12 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } 
 import { PaqueteData } from '../../../model/paquete-data';
 import { PaqueteService } from '../../../services/paquete-service';
 import { TiempoPlan } from '../../../util/enums/tiempoPlan';
+import { TiempoPlanLabelPipe } from '../../../util/tiempo-plan-label';
 
 @Component({
   selector: 'app-paquete-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TiempoPlanLabelPipe],
   templateUrl: './paquete-modal.html'
 })
 export class PaqueteModal implements OnInit, OnDestroy {

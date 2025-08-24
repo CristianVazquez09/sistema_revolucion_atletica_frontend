@@ -1,19 +1,23 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 
 import { PaqueteService } from '../../services/paquete-service';
 import { PaqueteData } from '../../model/paquete-data';
 import { PaqueteModal } from './paquete-modal/paquete-modal';
+import { NotificacionService } from '../../services/notificacion-service';
+import { TiempoPlanLabelPipe } from '../../util/tiempo-plan-label';
 
 @Component({
   selector: 'app-paquete-componet',
   standalone: true,
-  imports: [CommonModule, PaqueteModal],
+  imports: [CommonModule, PaqueteModal, TiempoPlanLabelPipe],
   templateUrl: './paquete.html',
   styleUrl: './paquete.css',
 })
 export class Paquete implements OnInit {
+
+  private notificacion = inject(NotificacionService);
 
   // Estado de pantalla
   listaPaquetes: PaqueteData[] = [];
@@ -70,7 +74,7 @@ export class Paquete implements OnInit {
     if (!confirm(`¿Eliminar paquete "${paquete.nombre}"?`)) return;
     this.servicioPaquetes.eliminar(paquete.idPaquete).subscribe({
       next: () => this.cargarPaquetes(),
-      error: () => alert('No se pudo eliminar.'),
+      error: () => this.notificacion.error('No se pudo eliminar.'),
     });
   }
 

@@ -1,0 +1,54 @@
+<!-- Usa tus clases rcm-* que ya definiste en tu css global -->
+<div class="rcm-card">
+  <div class="rcm-header">
+    <h3 class="rcm-title">Resumen de venta</h3>
+    <button type="button" class="rcm-close" (click)="cancelar.emit()">✕</button>
+  </div>
+
+  <!-- Fecha -->
+  <div class="rcm-block rcm-block--small">
+    <div class="rcm-row">
+      <div class="rcm-label">Fecha</div>
+      <div class="rcm-value">{{ fecha | date:'fullDate' }}</div>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="rcm-block">
+    <div class="font-semibold mb-2">Artículos</div>
+    <div *ngIf="items.length === 0" class="text-sm text-gray-600">Sin artículos.</div>
+
+    <div *ngFor="let it of items" class="rcm-item">
+      <div class="truncate">{{ it.nombre }} <span class="text-gray-500">× {{ it.cantidad }}</span></div>
+      <div class="rcm-amount">
+        {{ it.precioUnit * it.cantidad | currency:'USD':'symbol':'1.2-2' }}
+      </div>
+    </div>
+
+    <div class="rcm-total">
+      <div>Total</div>
+      <div>{{ total | currency:'USD':'symbol':'1.2-2' }}</div>
+    </div>
+  </div>
+
+  <!-- Tipo de pago -->
+  <div class="rcm-block rcm-block--small">
+    <label class="rcm-paylabel">Tipo de pago</label>
+    <div class="rcm-select">
+      <select [(ngModel)]="tipoPago">
+        <option *ngFor="let op of opcionesPago" [ngValue]="op">{{ op }}</option>
+      </select>
+      <div class="rcm-caret">▼</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="rcm-footer">
+    <button class="rcm-cta" [disabled]="guardando || items.length === 0" (click)="onConfirmar()">
+      {{ guardando ? 'Procesando…' : 'Confirmar y pagar' }}
+    </button>
+    <div class="mt-2 text-center">
+      <button type="button" class="text-sm text-gray-600 hover:underline" (click)="cancelar.emit()">Cancelar</button>
+    </div>
+  </div>
+</div>

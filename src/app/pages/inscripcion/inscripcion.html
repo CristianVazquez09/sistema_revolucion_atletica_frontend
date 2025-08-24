@@ -1,18 +1,18 @@
-<!-- Botonera superior -->
+<!-- Botonera superior (ejemplo de navegación) -->
 <div class="flex gap-4 px-4 md:px-8 mb-4">
   <button class="px-5 py-2 rounded-md bg-red-600 text-white shadow-md hover:bg-red-700">
     Agregar Socio
   </button>
 
-  <button class="px-5 py-2 rounded-md bg-red-600 text-white shadow-md hover:bg-red-700">
-    Reinscripción
+  <button [routerLink]="['/pages/reinscripcion', 3]"
+    class="px-5 py-2 rounded-md bg-red-600 text-white shadow-md hover:bg-red-700">
+    Reinscripción (demo)
   </button>
 
   <button class="px-5 py-2 rounded-md bg-red-600 text-white shadow-md hover:bg-red-700">
     Historial
   </button>
 </div>
-
 
 <!-- Card principal -->
 <div class="mx-4 md:mx-8 mt-4 rounded-xl2 bg-white ring-1 ring-black/10 shadow-card">
@@ -49,6 +49,8 @@
       </div>
     </div>
 
+    <!-- ... (botonera y demás igual) ... -->
+
     <!-- ======= Fila en 4 columnas: Foto | Huella | Comentarios | Paquete+Descuento+FechaPago ======= -->
     <div class="grid grid-cols-1 xl:grid-cols-[260px_260px_1.1fr_1.2fr] gap-4 items-stretch">
 
@@ -69,10 +71,10 @@
         } @else {
         <div class="w-full h-full grid place-items-center text-center">
           <div>
-            <div class="mx-auto mb-3 h-12 w-12  grid place-items-center">
-              <img src="iconos/subir-archivo.svg" alt="Icono calendario" class="w-6 h-6 text-white" />
+            <div class="mx-auto mb-3 h-12 w-12 grid place-items-center">
+              <img src="iconos/subir-archivo.svg" alt="Icono subir" class="w-6 h-6" />
             </div>
-            <label class="px-4 py-2 rounded-md  text-gray-700 hover:bg-gray-200">
+            <label class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-200">
               Subir archivo
               <input type="file" accept="image/*" class="hidden" (change)="onFotoSeleccionada($event)">
             </label>
@@ -106,12 +108,14 @@
           placeholder="Comentarios*"></textarea>
       </div>
 
-      <!-- 4) Paquete + Descuento + Fecha de pago (solo lectura) -->
+      <!-- 4) Paquete + Descuento + Fecha de pago -->
       <div class="h-full flex flex-col">
         <select formControlName="paqueteId" class="input-filled">
           <option [ngValue]="0" disabled>Seleccionar paquete</option>
           @for (p of listaPaquetes; track p.idPaquete) {
-          <option [ngValue]="p.idPaquete">{{ p.nombre ?? ('Paquete #' + p.idPaquete) }}</option>
+          <option [ngValue]="p.idPaquete">
+            {{ p.nombre }} — {{ p.tiempo | tiempoPlan }}
+          </option>
           }
         </select>
 
@@ -122,11 +126,13 @@
           {{ fechaPagoVista() | date:'dd/MM/yyyy' }}
         </div>
 
-        <!-- Conservamos el control en el form pero oculto -->
         <input type="hidden" formControlName="fechaInicio">
       </div>
     </div>
     <!-- ======= /Fila 4 columnas ======= -->
+
+    <!-- (el resto del HTML permanece igual: resumen, botón, modal, etc.) -->
+
 
     <!-- Resumen de importes -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -166,8 +172,8 @@
   <div class="relative z-10 w-full max-w-[560px] mx-4" (click)="$event.stopPropagation()">
     <app-resumen-compra
       [socioNombre]="formularioInscripcion.controls.nombre.value + ' ' + formularioInscripcion.controls.apellido.value"
-      [fechaPago]="fechaPagoVista()" [concepto]="paqueteSeleccionado()?.nombre ?? 'Paquete seleccionado'"
-      [montoPaquete]="precioPaquete()" [montoInscripcion]="costoInscripcion()" [descuento]="descuentoSig() ?? 0"
+      [fechaPago]="fechaPagoVista()" [concepto]="(paqueteActual()?.nombre ?? 'Paquete seleccionado')"
+      [montoPaquete]="precioPaquete()" [montoInscripcion]="costoInscripcion()" [descuento]="descuentoValor()"
       [total]="totalVista()" [guardando]="guardandoMembresia" (cancelar)="cerrarModalResumen()"
       (confirmar)="confirmarPagoYGuardar($event)">
     </app-resumen-compra>
