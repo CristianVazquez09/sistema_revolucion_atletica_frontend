@@ -102,7 +102,7 @@ export class Asistencia implements OnInit {
       error: () => { this.error = 'No se pudo cargar el socio.'; this.cargando = false; }
     });
 
-    this.membresiaSrv.buscarMembresiasVigentesPorSocio(id).subscribe({
+    this.membresiaSrv.buscar({ idSocio: id, vigentes: true }).subscribe({
       next: (lista: MembresiaData[]) => {
         this.store.guardarEstado(id, this.socio(), lista ?? []);
         this.cargando = false;

@@ -77,7 +77,7 @@ export class Socio implements OnInit, OnDestroy {
           this.mensajeError = null;
           this.paginaActual = 0; // nueva búsqueda => desde la primera página
           return this.socioService
-            .buscarSociosPorNombre(texto, this.paginaActual, this.tamanioPagina)
+            .buscarPaginado(this.paginaActual, this.tamanioPagina, { nombre: texto })
             .pipe(finalize(() => (this.cargando = false)));
         })
       )
@@ -126,12 +126,8 @@ export class Socio implements OnInit, OnDestroy {
     const texto = this.terminoBusqueda.trim();
     const fuente$ =
       texto.length >= this.minCaracteresBusqueda
-        ? this.socioService.buscarSociosPorNombre(
-            texto,
-            this.paginaActual,
-            this.tamanioPagina
-          )
-        : this.socioService.buscarSocios(this.paginaActual, this.tamanioPagina);
+        ? this.socioService.buscarPaginado(this.paginaActual, this.tamanioPagina, { nombre: texto })
+        : this.socioService.buscarPaginado(this.paginaActual, this.tamanioPagina);
 
     fuente$.pipe(finalize(() => (this.cargando = false))).subscribe({
       next: (resp: PagedResponse<SocioData>) => this.aplicarRespuesta(resp),

@@ -10,16 +10,6 @@ import { environment } from '../../environments/environment.development';
 export class ProductoService  extends GenericService<ProductoData>{
 
   constructor(protected override http: HttpClient){
-    super(http, `${environment.HOST}/productos`,)
-
+    super(http, `${environment.HOST}/productos`)
   }
-
-  buscarPorCategoria(idCategoria:number){
-    return this.http.get<ProductoData[]>(`${this.url}/buscar/${idCategoria}`);
-  }
-
-  buscarPorNombre(nombreProducto:string){
-    return this.http.get<ProductoData[]>(`${this.url}/buscar/nombre/${nombreProducto}`);
-  }
-  
 }
