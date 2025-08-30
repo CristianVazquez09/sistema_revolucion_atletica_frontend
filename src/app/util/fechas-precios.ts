@@ -1,4 +1,4 @@
-import { TiempoPlan } from '../util/enums/tiempoPlan';
+import { TiempoPlan } from './enums/tiempo-plan';
 
 export function hoyISO(): string {
   return new Date().toISOString().slice(0, 10);

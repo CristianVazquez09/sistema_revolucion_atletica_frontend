@@ -1,6 +1,6 @@
 // src/app/model/membresia-data.ts
-import { TipoMovimiento } from '../util/enums/TipoMovimiento';
-import { TipoPago } from '../util/enums/TipoPago  ';
+import { TipoMovimiento } from '../util/enums/tipo-movimiento';
+import { TipoPago } from '../util/enums/tipo-pago ';
 import { PaqueteData } from './paquete-data';
 import { SocioData } from './socio-data';
 

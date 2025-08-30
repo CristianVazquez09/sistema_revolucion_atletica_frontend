@@ -11,11 +11,11 @@ import { NotificacionService } from '../../services/notificacion-service';
 
 import { SocioData } from '../../model/socio-data';
 import { PaqueteData } from '../../model/paquete-data';
-import { TipoMovimiento } from '../../util/enums/TipoMovimiento';
-import { TiempoPlan } from '../../util/enums/tiempoPlan';
+import { TipoMovimiento } from '../../util/enums/tipo-movimiento';
+import { TiempoPlan } from '../../util/enums/tiempo-plan';
 
 import { ResumenCompra } from '../resumen-compra/resumen-compra';
-import { TipoPago } from '../../util/enums/TipoPago  ';
+import { TipoPago } from '../../util/enums/tipo-pago ';
 import { TiempoPlanLabelPipe } from '../../util/tiempo-plan-label';
 import { calcularFechaFin, calcularTotal } from '../../util/fechas-precios';
 

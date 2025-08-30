@@ -14,10 +14,10 @@ import { PaqueteData } from '../../model/paquete-data';
 import { SocioData } from '../../model/socio-data';
 import { MembresiaData } from '../../model/membresia-data';
 
-import { TipoMovimiento } from '../../util/enums/TipoMovimiento';
+import { TipoMovimiento } from '../../util/enums/tipo-movimiento';
 import { TiempoPlanLabelPipe } from '../../util/tiempo-plan-label';
 import { calcularFechaFin, calcularTotal, hoyISO } from '../../util/fechas-precios';
-import { TipoPago } from '../../util/enums/TipoPago  ';
+import { TipoPago } from '../../util/enums/tipo-pago ';
 
 
 type SocioRequest = Omit<SocioData, 'idSocio'> & { idSocio?: number };

@@ -1,4 +1,4 @@
-import { TiempoPlan } from "../util/enums/tiempoPlan";
+import { TiempoPlan } from "../util/enums/tiempo-plan";
 
 export interface PaqueteData {
   idPaquete: number;

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { PaqueteData } from '../../../model/paquete-data';
 import { PaqueteService } from '../../../services/paquete-service';
-import { TiempoPlan } from '../../../util/enums/tiempoPlan';
+import { TiempoPlan } from '../../../util/enums/tiempo-plan';
 import { TiempoPlanLabelPipe } from '../../../util/tiempo-plan-label';
 
 @Component({
