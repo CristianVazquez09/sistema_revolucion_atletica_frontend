@@ -1,12 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { finalize } from 'rxjs';
-
 import { PaqueteService } from '../../services/paquete-service';
 import { PaqueteData } from '../../model/paquete-data';
 import { PaqueteModal } from './paquete-modal/paquete-modal';
 import { NotificacionService } from '../../services/notificacion-service';
 import { TiempoPlanLabelPipe } from '../../util/tiempo-plan-label';
+import { BaseCrudListComponent } from '../../shared/base-crud-list.component';
 
 @Component({
   selector: 'app-paquete-componet',
@@ -15,67 +14,24 @@ import { TiempoPlanLabelPipe } from '../../util/tiempo-plan-label';
   templateUrl: './paquete.html',
   styleUrl: './paquete.css',
 })
-export class Paquete implements OnInit {
+export class Paquete extends BaseCrudListComponent<PaqueteData> implements OnInit {
 
-  private notificacion = inject(NotificacionService);
+  constructor(
+    servicioPaquetes: PaqueteService,
+    notificacion: NotificacionService
+  ) {
+    super(servicioPaquetes, notificacion);
+  }
 
-  // Estado de pantalla
-  listaPaquetes: PaqueteData[] = [];
-  estaCargando = true;
-  mensajeError: string | null = null;
-
-  // Estado de modal
-  mostrarModalPaquete = signal(false);
-  paqueteEnEdicion: PaqueteData | null = null;
-
-  constructor(private servicioPaquetes: PaqueteService) {}
-
-  // Ciclo de vida
   ngOnInit(): void {
-    this.cargarPaquetes();
-
-    
+    this.cargar();
   }
 
-  // Acciones
-  cargarPaquetes(): void {
-    this.estaCargando = true;
-    this.mensajeError = null;
-
-    this.servicioPaquetes
-      .buscarTodos()
-      .pipe(finalize(() => (this.estaCargando = false)))
-      .subscribe({
-        next: (data) => { this.listaPaquetes = data ?? []; },
-        error: () => { this.mensajeError = 'No se pudo cargar la lista de paquetes.'; },
-      });
+  protected override getId(item: PaqueteData): number | undefined {
+    return item.idPaquete;
   }
 
-  abrirModalParaCrear(): void {
-    this.paqueteEnEdicion = null;
-    this.mostrarModalPaquete.set(true);
+  protected override getMensajeConfirmacion(item: PaqueteData): string {
+    return `¿Eliminar paquete "${item.nombre}"?`;
   }
-
-  abrirModalParaEditar(paquete: PaqueteData): void {
-    this.paqueteEnEdicion = paquete;
-    this.mostrarModalPaquete.set(true);
-  }
-
-  cerrarModalPaquete(): void {
-    this.mostrarModalPaquete.set(false);
-  }
-
-  despuesDeGuardar(): void {
-    this.cerrarModalPaquete();
-    this.cargarPaquetes();
-  }
-
-  eliminarPaquete(paquete: PaqueteData): void {
-    if (!confirm(`¿Eliminar paquete "${paquete.nombre}"?`)) return;
-    this.servicioPaquetes.eliminar(paquete.idPaquete).subscribe({
-      next: () => this.cargarPaquetes(),
-      error: () => this.notificacion.error('No se pudo eliminar.'),
-    });
-  }
-
 }
