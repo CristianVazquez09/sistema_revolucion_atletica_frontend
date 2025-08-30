@@ -60,12 +60,12 @@
             <tr>
                 <td colspan="8" class="py-6 px-6 text-center text-red-600">{{ error }}</td>
             </tr>
-            } @else if (productos.length === 0) {
+            } @else if (items.length === 0) {
             <tr>
                 <td colspan="8" class="py-6 px-6 text-center text-ra-slate">Sin resultados.</td>
             </tr>
             } @else {
-            @for (p of productos; track p.idProducto) {
+            @for (p of items; track p.idProducto) {
             <tr class="border-t border-ra-grayLight/60 hover:bg-ra-bg text-center">
                 <td class="py-3 px-6 text-center">{{ p.idProducto }}</td>
                 <td class="py-3 px-6 truncate">{{ p.nombre }}</td>
@@ -86,7 +86,7 @@
                 <td class="py-2 px-3">
                     <div class="flex items-center justify-center gap-2">
                         <!-- Editar (SVG inline) -->
-                        <button (click)="editar(p)" class="p-2 rounded hover:bg-ra-grayLight/40" title="Editar">
+                        <button (click)="abrirEditar(p)" class="p-2 rounded hover:bg-ra-grayLight/40" title="Editar">
                             <img src="/iconos/editar.svg" alt="Editar" class="w-9 h-9" />
                         </button>
                         <!-- Eliminar (SVG inline) -->
@@ -108,7 +108,7 @@
     <div class="absolute inset-0 bg-black/50" (click)="cerrarModal()"></div>
     <div class="relative z-10 w-full max-w-2xl mx-4">
         <div class="bg-ra-white rounded-xl2 shadow-card">
-            <app-producto-modal [producto]="productoEditando" (cancelar)="cerrarModal()" (guardado)="onGuardado()">
+            <app-producto-modal [producto]="itemEditando" (cancelar)="cerrarModal()" (guardado)="despuesDeGuardar()">
             </app-producto-modal>
         </div>
     </div>

@@ -1,10 +1,11 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterModule } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { ProductoModal } from './producto-modal/producto-modal';
 import { ProductoService } from '../../services/producto-service';
 import { ProductoData } from '../../model/producto-data';
 import { NotificacionService } from '../../services/notificacion-service';
+import { BaseCrudListComponent } from '../../shared/base-crud-list.component';
 
 @Component({
   selector: 'app-producto',
@@ -13,51 +14,24 @@ import { NotificacionService } from '../../services/notificacion-service';
   templateUrl: './producto.html',
   styleUrl: './producto.css'
 })
-export class Producto implements OnInit {
+export class Producto extends BaseCrudListComponent<ProductoData> implements OnInit {
 
-  private productoSrv = inject(ProductoService);
-  private router = inject(Router);
-  private notificacion = inject(NotificacionService);
-
-  productos: ProductoData[] = [];
-  loading = true;
-  error: string | null = null;
-
-  // Modal
-  mostrarModal = signal(false);
-  productoEditando: ProductoData | null = null;
-
-  ngOnInit(): void { this.cargar(); }
-
-  cargar(): void {
-    this.loading = true;
-    this.error = null;
-    this.productoSrv.buscarTodos().subscribe({
-      next: data => { this.productos = data ?? []; this.loading = false; },
-      error: err => { console.error(err); this.error = 'No se pudieron cargar los productos.'; this.loading = false; }
-    });
+  constructor(
+    productoSrv: ProductoService,
+    notificacion: NotificacionService
+  ) {
+    super(productoSrv, notificacion);
   }
 
-  abrirCrear(): void {
-    this.productoEditando = null;
-    this.mostrarModal.set(true);
+  ngOnInit(): void {
+    this.cargar();
   }
 
-  editar(p: ProductoData): void {
-    this.productoEditando = p;
-    this.mostrarModal.set(true);
+  protected override getId(item: ProductoData): number | undefined {
+    return item.idProducto;
   }
 
-  cerrarModal(): void { this.mostrarModal.set(false); }
-
-  onGuardado(): void { this.cerrarModal(); this.cargar(); }
-
-  eliminar(p: ProductoData) {
-    if (!p.idProducto) return;
-    if (!confirm(`¿Eliminar producto "${p.nombre}"?`)) return;
-    this.productoSrv.eliminar(p.idProducto).subscribe({
-      next: () => this.cargar(),
-      error: () => this.notificacion.error('No se pudo eliminar el producto.')
-    });
+  protected override getMensajeConfirmacion(item: ProductoData): string {
+    return `¿Eliminar producto "${item.nombre}"?`;
   }
 }
