@@ -94,7 +94,8 @@ export class PuntoVenta implements OnInit {
             this.categoriaActivaId = null;      // búsqueda libre
             this.cargandoProductos = true;
             this.productoSeleccionado = null;
-            return this.productoSrv.buscarPorNombre(t)
+            return this.productoSrv
+              .buscar({ nombre: t })
               .pipe(finalize(() => (this.cargandoProductos = false)));
           }
           if (t.length === 0) {
@@ -180,7 +181,7 @@ export class PuntoVenta implements OnInit {
     this.productos = [];
     this.productosFiltrados = [];
 
-    this.productoSrv.buscarPorCategoria(idCategoria).subscribe({
+    this.productoSrv.buscar({ idCategoria }).subscribe({
       next: (lista: ProductoData[]) => {
         this.productos = lista ?? [];
         this.productosFiltrados = [...this.productos];

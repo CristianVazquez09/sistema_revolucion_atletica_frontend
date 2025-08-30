@@ -59,7 +59,8 @@ export class SocioInformacion implements OnInit {
     this.cargando = true;
     this.error = null;
 
-    this.membresiaSrv.buscarMembresiasPorSocio(this.idSocio, this.pagina, this.tamanio)
+    this.membresiaSrv
+      .buscarPaginado(this.pagina, this.tamanio, { idSocio: this.idSocio })
       .pipe(finalize(() => this.cargando = false))
       .subscribe({
         next: (resp: PagedResponse<MembresiaData>) => {
