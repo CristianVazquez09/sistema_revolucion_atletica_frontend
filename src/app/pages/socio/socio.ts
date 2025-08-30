@@ -18,19 +18,7 @@ import { SocioData } from '../../model/socio-data';
 import { SocioModal } from './socio-modal/socio-modal';
 import { Router } from '@angular/router';
 import { NotificacionService } from '../../services/notificacion-service';
-
-// ─────────── Tipos de paginación del backend ───────────
-type PageInfo = {
-  size: number; // tamaño de página
-  number: number; // 0-based
-  totalElements: number;
-  totalPages: number;
-};
-
-type PagedResponse<T> = {
-  content: T[];
-  page: PageInfo;
-};
+import { PagedResponse } from '../../model/paged-response';
 
 @Component({
   selector: 'app-socio',

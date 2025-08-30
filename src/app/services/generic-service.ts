@@ -1,5 +1,6 @@
 import { HttpClient, HttpHandler, HttpHeaders } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -20,16 +21,16 @@ export class GenericService <T> {
     return this.http.get<T>(`${this.url}/${id}`);
   }
 
-  guardar(t: T){
-    return this.http.post(this.url, t);
+  guardar(t: T): Observable<T> {
+    return this.http.post<T>(this.url, t);
   }
 
-  actualizar(id: number, t: T){
-    return this.http.put(`${this.url}/${id}`, t);
+  actualizar(id: number, t: T): Observable<T> {
+    return this.http.put<T>(`${this.url}/${id}`, t);
   }
 
-  eliminar(id: number){
-    return this.http.delete(`${this.url}/${id}`);
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}`);
   }
   
 }

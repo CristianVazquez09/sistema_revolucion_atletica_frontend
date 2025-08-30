@@ -5,20 +5,7 @@ import { finalize } from 'rxjs';
 import { MembresiaData } from '../../../model/membresia-data';
 import { MembresiaService } from '../../../services/membresia-service';
 import { FormsModule } from '@angular/forms';
-
-
-
-type PageInfo = {
-  size: number;
-  number: number;        // 0-based
-  totalElements: number;
-  totalPages: number;
-};
-
-type PagedResponse<T> = {
-  content: T[];
-  page: PageInfo;
-};
+import { PagedResponse } from '../../../model/paged-response';
 
 @Component({
   selector: 'app-socio-informacion',
