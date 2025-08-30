@@ -5,20 +5,7 @@ import { finalize } from 'rxjs';
 import { MembresiaData } from '../../../model/membresia-data';
 import { MembresiaService } from '../../../services/membresia-service';
 import { FormsModule } from '@angular/forms';
-
-
-
-type PageInfo = {
-  size: number;
-  number: number;        // 0-based
-  totalElements: number;
-  totalPages: number;
-};
-
-type PagedResponse<T> = {
-  content: T[];
-  page: PageInfo;
-};
+import { PagedResponse } from '../../../model/paged-response';
 
 @Component({
   selector: 'app-socio-informacion',
@@ -72,18 +59,18 @@ export class SocioInformacion implements OnInit {
     this.cargando = true;
     this.error = null;
 
-    this.membresiaSrv.buscarMemebresiaPorSocio(this.idSocio, this.pagina, this.tamanio)
+    this.membresiaSrv.buscarMembresiasPorSocio(this.idSocio, this.pagina, this.tamanio)
       .pipe(finalize(() => this.cargando = false))
       .subscribe({
         next: (resp: PagedResponse<MembresiaData>) => {
-          this.movimientos = resp.content ?? [];
-          this.totalPaginas = resp.page?.totalPages ?? 0;
-          this.totalElementos = resp.page?.totalElements ?? 0;
-          this.tamanio = resp.page?.size ?? this.tamanio;
-          this.pagina = resp.page?.number ?? this.pagina;
+          this.movimientos = resp.contenido ?? [];
+          this.totalPaginas = resp.pagina?.totalPaginas ?? 0;
+          this.totalElementos = resp.pagina?.totalElementos ?? 0;
+          this.tamanio = resp.pagina?.tamanio ?? this.tamanio;
+          this.pagina = resp.pagina?.numero ?? this.pagina;
 
           // Rellena encabezado con el primer registro (si existe)
-          const s = this.movimientos[0]?.socio as any;
+          const s = this.movimientos[0]?.socio;
           this.socioNombre = s ? `${s.nombre} ${s.apellido}` : null;
           this.socioTelefono = s?.telefono ?? null;
 

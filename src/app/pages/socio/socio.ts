@@ -18,19 +18,7 @@ import { SocioData } from '../../model/socio-data';
 import { SocioModal } from './socio-modal/socio-modal';
 import { Router } from '@angular/router';
 import { NotificacionService } from '../../services/notificacion-service';
-
-// ─────────── Tipos de paginación del backend ───────────
-type PageInfo = {
-  size: number; // tamaño de página
-  number: number; // 0-based
-  totalElements: number;
-  totalPages: number;
-};
-
-type PagedResponse<T> = {
-  content: T[];
-  page: PageInfo;
-};
+import { PagedResponse } from '../../model/paged-response';
 
 @Component({
   selector: 'app-socio',
@@ -118,11 +106,11 @@ export class Socio implements OnInit, OnDestroy {
 
   // ─────────── Carga y manejo de respuestas ───────────
   private aplicarRespuesta(resp: PagedResponse<SocioData>): void {
-    this.listaSocios = resp.content ?? [];
-    this.totalPaginas = resp.page?.totalPages ?? 0;
-    this.totalElementos = resp.page?.totalElements ?? 0;
-    this.tamanioPagina = resp.page?.size ?? this.tamanioPagina;
-    this.paginaActual = resp.page?.number ?? this.paginaActual;
+    this.listaSocios = resp.contenido ?? [];
+    this.totalPaginas = resp.pagina?.totalPaginas ?? 0;
+    this.totalElementos = resp.pagina?.totalElementos ?? 0;
+    this.tamanioPagina = resp.pagina?.tamanio ?? this.tamanioPagina;
+    this.paginaActual = resp.pagina?.numero ?? this.paginaActual;
 
     // Si quedó vacía la página actual (p.ej. tras eliminar), retrocede una y recarga.
     if (this.listaSocios.length === 0 && this.paginaActual > 0) {
