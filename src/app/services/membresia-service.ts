@@ -4,6 +4,7 @@ import { GenericService } from './generic-service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment.development';
 import { MembresiaData } from '../model/membresia-data';
+import { PagedResponse } from '../model/paged-response';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +16,11 @@ export class MembresiaService extends GenericService<MembresiaData> {
   }
 
   buscarMemebresiaPorSocio(idSocio: number,page: number, size:number){
-    return this.http.get<any>(`${this.url}/buscar/socio/${idSocio}?page=${page}&size=${size}`);
+    return this.http.get<PagedResponse<MembresiaData>>(`${this.url}/buscar/socio/${idSocio}?page=${page}&size=${size}`);
   }
 
   buscarMembresiasVigentesPorSocio(idSocio: number){
-    return this.http.get<any>(`${this.url}/por-socio/${idSocio}/vigentes`);
+    return this.http.get<MembresiaData[]>(`${this.url}/por-socio/${idSocio}/vigentes`);
   }
   
 }

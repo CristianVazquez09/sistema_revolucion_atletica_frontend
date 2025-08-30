@@ -113,7 +113,7 @@ export class PuntoVenta implements OnInit {
         })
       )
       .subscribe({
-        next: (lista) => {
+        next: (lista: ProductoData[] | null) => {
           if (!lista) return;
           this.productos = lista ?? [];
           this.productosFiltrados = [...this.productos];
@@ -181,7 +181,7 @@ export class PuntoVenta implements OnInit {
     this.productosFiltrados = [];
 
     this.productoSrv.buscarPorCategoria(idCategoria).subscribe({
-      next: (lista) => {
+      next: (lista: ProductoData[]) => {
         this.productos = lista ?? [];
         this.productosFiltrados = [...this.productos];
         this.cargandoProductos = false;
